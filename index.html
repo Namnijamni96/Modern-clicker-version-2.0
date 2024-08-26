@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Clicker Game - Cyberpunk UI</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #0f0c29;
+            background: linear-gradient(315deg, #0f0c29 0%, #302b63 74%, #24243e 100%);
+            color: #fff;
+        }
+
+        #game-container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            width: 350px;
+        }
+
+        #points {
+            font-size: 28px;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 15px 25px;
+            margin: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            outline: none;
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        #click-button {
+            background-color: #ff8a00;
+            background: linear-gradient(135deg, #ff8a00, #ff3d00);
+        }
+
+        #click-button:hover {
+            background-color: #ff3d00;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 61, 0, 0.75);
+        }
+
+        #restart-button {
+            background-color: #ff0057;
+            display: none;
+            background: linear-gradient(135deg, #ff0057, #ff0066);
+        }
+
+        #restart-button:hover {
+            background-color: #ff0066;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 0, 102, 0.75);
+        }
+
+        #command-box {
+            padding: 12px;
+            width: 90%;
+            font-size: 16px;
+            margin-top: 20px;
+            background-color: #222;
+            color: #fff;
+            border: 2px solid #ff8a00;
+            border-radius: 5px;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.75);
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #submit-command {
+            background-color: #00f5ff;
+            background: linear-gradient(135deg, #00f5ff, #0055ff);
+        }
+
+        #submit-command:hover {
+            background-color: #0055ff;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 85, 255, 0.75);
+        }
+
+        #win-message {
+            font-size: 24px;
+            color: #00ff99;
+            margin-top: 20px;
+            display: none;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #win-message.show {
+            display: block;
+            opacity: 1;
+            animation: popIn 0.5s ease-out;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Password Prompt Styles */
+        #password-prompt {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(10, 10, 10, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            color: #0ff;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 255, 255, 0.4);
+            width: 350px;
+        }
+
+        #password-prompt input {
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 80%;
+            background-color: #333;
+            color: #0ff;
+            box-shadow: inset 0 0 5px rgba(0, 255, 255, 0.5);
+        }
+
+        #password-prompt button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff00ff;
+            background: linear-gradient(135deg, #ff00ff, #9900ff);
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        }
+
+        #password-prompt button:hover {
+            background-color: #9900ff;
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(153, 0, 255, 0.75);
+        }
+
+        #info-icon {
+            font-size: 18px;
+            color: #0ff;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        #info-tooltip {
+            display: none;
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            color: #0ff;
+            font-size: 14px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            text-align: center;
+        }
+
+        #password-prompt p {
+            color: #0ff;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Modern Clicker Game</h1>
+        <div id="points">Points: 0</div>
+        <button id="click-button">Click Me!</button>
+        <button id="restart-button">Restart Game</button>
+        <input type="text" id="command-box" placeholder="Enter command...">
+        <button id="submit-command">Submit Command</button>
+        <div id="win-message">Congratulations! You Win!</div>
+    </div>
+
+    <!-- Password Prompt -->
+    <div id="password-prompt">
+        <p>Your game was terminated. Enter the password to restart: <span id="info-icon">ⓘ</span></p>
+        <input type="password" id="password-input" placeholder="Enter password">
+        <button id="password-submit">Submit</button>
+        <div id="info-tooltip">Your game is terminated by command. To restart the game, enter the correct password.</div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const pointsDisplay = document.getElementById("points");
+            const clickButton = document.getElementById("click-button");
+            const restartButton = document.getElementById("restart-button");
+            const commandBox = document.getElementById("command-box");
+            const submitCommandButton = document.getElementById("submit-command");
+            const winMessage = document.getElementById("win-message");
+            const passwordPrompt = document.getElementById("password-prompt");
+            const passwordInput = document.getElementById("password-input");
+            const passwordSubmitButton = document.getElementById("password-submit");
+            const infoIcon = document.getElementById("info-icon");
+            const infoTooltip = document.getElementById("info-tooltip");
+
+            const winPoints = 100;  // Points needed to win the game
+            const KILL_CODE = "*/root.(550)*/kill.";  // The secret kill code
+            const RESTART_PASSWORD = "123"; // Set your desired password here
+
+            function initializeGame() {
+                const points = parseInt(localStorage.getItem('points')) || 0;
+                const gameTerminated = localStorage.getItem('gameTerminated') === 'true';
+
+                if (gameTerminated) {
+                    passwordPrompt.style.display = "block";
+                    document.getElementById("game-container").style.display = "none";
+                } else {
+                    document.getElementById("game-container").style.display = "block";
+                    pointsDisplay.textContent = `Points: ${points}`;
+                }
+
+                // Add points when clicking the button
+                clickButton.addEventListener("click", () => {
+                    let points = parseInt(localStorage.getItem('points')) || 0;
+                    points++;
+                    pointsDisplay.textContent = `Points: ${points}`;
+                    localStorage.setItem('points', points);
+
+                    // Check if the player wins
+                    if (points >= winPoints) {
+                        winMessage.classList.add("show");
+                        localStorage.removeItem('points');
+                    }
+                });
+
+                // Handle submitting a command
+                submitCommandButton.addEventListener("click", () => {
+                    const command = commandBox.value.trim();
+
+                    if (command === KILL_CODE) {
+                        localStorage.setItem('gameTerminated', 'true');
+                        document.getElementById("game-container").style.display = "none";
+                        passwordPrompt.style.display = "block";
+                        passwordInput.value = "";
+                    }
+                });
+
+                // Handle restarting the game
+                passwordSubmitButton.addEventListener("click", () => {
+                    const enteredPassword = passwordInput.value;
+
+                    if (enteredPassword === RESTART_PASSWORD) {
+                        localStorage.removeItem('gameTerminated');
+                        passwordPrompt.style.display = "none";
+                        document.getElementById("game-container").style.display = "block";
+                        localStorage.removeItem('points');
+                        pointsDisplay.textContent = "Points: 0";
+                        winMessage.classList.remove("show");
+                    } else {
+                        alert("Incorrect password. Please try again.");
+                    }
+                });
+
+                // Show tooltip when hovering over the info icon
+                infoIcon.addEventListener("mouseenter", () => {
+                    infoTooltip.style.display = "block";
+                });
+
+                infoIcon.addEventListener("mouseleave", () => {
+                    infoTooltip.style.display = "none";
+                });
+            }
+
+            initializeGame();
+        });
+    </script>
+</body>
+</html>
